@@ -129,6 +129,9 @@ splitter = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=0)
 for train_index, test_index in splitter.split(X, y):
     X_train, X_test = X.iloc[train_index], X.iloc[test_index]
     Y_train, Y_test = Y.iloc[train_index], Y.iloc[test_index]
+    
+X_train = X_train.values
+X_test = X_test.values 
 
 print("\n--- Data Split results ---")
 print(f"Train Data Size: {X_train.shape}")
