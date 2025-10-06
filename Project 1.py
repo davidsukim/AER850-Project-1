@@ -264,23 +264,27 @@ from sklearn.ensemble import StackingClassifier
 from sklearn.linear_model import LogisticRegression
 
 # 1. Define Base Estimators
-# Bring the best Model(RF_Random, SVC_Grid, KNN_Grid)
+top_2_models = results_df.sort_values(by='F1 Score (Macro)', ascending=False).head(2)
+top_2_names = top_2_models.index.tolist()
+
+print("\n--- Step 6: Model used for stacking ---")
+print(f"Model 1: {top_2_names[0]} (F1: {top_2_models.iloc[0]['F1 Score (Macro)']:.4f})")
+print(f"Model 2: {top_2_names[1]} (F1: {top_2_models.iloc[1]['F1 Score (Macro)']:.4f})")
+
+
 base_estimators = [
-    ('rf', optimized_models['RF_Random']), 
-    ('svc', optimized_models['SVC_Grid']),
-    ('knn', optimized_models['KNN_Grid'])
+    (name, optimized_models[name]) for name in top_2_names
 ]
 
 # 2. Define Final Estimator Using LogisticeRegression
 final_estimator = LogisticRegression(solver='lbfgs', max_iter=1000, random_state=0)
 
-
 # 3. StackingClassifier Training
-# cv=5: 내부적으로 5-Fold 교차 검증을 사용하여 기본 모델의 예측을 메타 모델의 입력으로 만듭니다.
+
 stack_model = StackingClassifier(
     estimators=base_estimators, 
     final_estimator=final_estimator,
-    cv=5, 
+    cv=5, # cv=5: Internally uses 5-Fold Cross-Validation to generate out-of-fold predictions
     n_jobs=-1  # using Full CPU Core
 )
 
